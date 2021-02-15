@@ -1,0 +1,14 @@
+- Java Extension Pack
+- Spring Boot Extension Pack que contém dentro:
+    * Spring Boot Tools
+    * Spring Initializr Java Support
+    * Spring Boot Dashboard
+- Lombok Annotations Support for VS Code
+- Para ver a tela do Java OverView apertar command + shift + p 
+e digitar OverView
+- Temos que ter o maven instalado no Mac
+- Verificar se o gerenciador de dependencias Homebrew está instalado
+- Digitar brew -v no terminal do Mac
+- Para instalar o maven no Mac basta digitar no terminal brew install maven
+- Para verificar se o maven está instalado digitamos: mvn --version
+- No momento da criação escolher lombok e restRepositories.
