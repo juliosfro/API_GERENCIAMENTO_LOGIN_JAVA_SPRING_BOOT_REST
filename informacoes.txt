@@ -12,3 +12,45 @@ e digitar OverView
 - Para instalar o maven no Mac basta digitar no terminal brew install maven
 - Para verificar se o maven está instalado digitamos: mvn --version
 - No momento da criação escolher lombok e restRepositories.
+
+- Vamos criar nosso projeto usando o Spring Tool Suite (STS).
+- O primeiro passo é configurar o projeto com tudo que iremos precisar.
+- Podemos criar o projeto pelo site do spring.io e importar dentro do STS
+ou criar diretamente pelo STS.
+
+docker run --name postbanco -e POSTGRES_PASSWORD=123 -d -p 5432:5432 postgres
+MacBook-Air-de-Julio:~ julio$ docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                    PORTS                    
+9c7254589f45        postgres            "docker-entrypoint.s…"   36 seconds ago      Up 35 seconds             0.0.0.0:5432->5432/tcp 
+
+senha do banco de dados: 123
+
+- pom.xml é o arquivo de configuração do maven onde serão colocadas as dependencias.
+- Em um projeto Spring podemos trabalhar com REST e MVC ao mesmo tempo, podemos
+trabalhar com vários tipos de arquitetura dentro de um mesmo projeto.
+- application.properties é o arquivo onde fica todas as configurações para se conectar
+no banco de dados via driver JDBC, como string de conexão, porta, usuario, senha 
+e etc.
+- O arquivo application.properties fica no seguinte caminho:
+     /src/main/resources/application.properties
+
+- É necessário pesquisar o dialeto do banco de dados para o Hibernate.
+- Exemplo de passagem de parametro na url:
+    http://localhost:8080/usuario/?nome=Julio
+
+@RestController /* Para a classe aceitar métodos REST */
+@RequestMapping(value = "/usuario") /* Estou mapeando para /usuario */
+public class IndexController {
+
+	@GetMapping(value = "/", produces = "application/json") /* Estou mapeando para a raíz de /usuario/. */
+	/* Vou receber um parametro chamado nome do tipo String. */
+	public ResponseEntity init(@RequestParam(value = "nome") String nome ) {
+		return new ResponseEntity("Olá usuário REST Spring Boot seu nome é: " + nome, HttpStatus.OK);
+	}
+}
+
+- Acima está um exemplo básico de chamada de método REST com passagem de parametro na url.
+- Para não dar erro é sempre necessário assumir um valor padrão.
+- Para passar mais de um parametro na url usamos o &, veja abaixo:
+    http://localhost:8080/usuario/?nome=Julio&salario=3000
+- x

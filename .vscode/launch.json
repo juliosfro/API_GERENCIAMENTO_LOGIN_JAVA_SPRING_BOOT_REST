@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-CursospringrestapiApplication<cursospringrestapi>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "curso.api.rest.CursospringrestapiApplication",
+            "projectName": "cursospringrestapi",
+            "args": ""
+        }
+    ]
+}
