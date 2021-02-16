@@ -53,4 +53,12 @@ public class IndexController {
 - Para não dar erro é sempre necessário assumir um valor padrão.
 - Para passar mais de um parametro na url usamos o &, veja abaixo:
     http://localhost:8080/usuario/?nome=Julio&salario=3000
-- x
+
+ Retornando usuário em JSON para a tela
+----------
+- Para consultar usuarios usamos o método GET.
+
+Criando nosso serviço POST e efetuando um cadastro de usuário
+---------
+- Para cadastrar um usuário usamos o método POST.
+-xxx.
