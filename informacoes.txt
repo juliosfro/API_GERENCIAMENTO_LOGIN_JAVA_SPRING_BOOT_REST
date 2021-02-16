@@ -61,4 +61,18 @@ public class IndexController {
 Criando nosso serviço POST e efetuando um cadastro de usuário
 ---------
 - Para cadastrar um usuário usamos o método POST.
--xxx.
+- Exemplo de objeto no formato json a ser passado em uma requisição POST
+        
+        {
+        "id": null,
+        "login": "marcela@gmail.com",
+        "senha": "123",
+        "nome": "Marcela Misale"
+        }
+
+- O id deve ser passado como nulo para não dar erro de violação de constraint, 
+pois no banco de dados o mesmo está como autoincremento.
+
+ Criando a atualização de cadastro com o PUT
+
+ - 
