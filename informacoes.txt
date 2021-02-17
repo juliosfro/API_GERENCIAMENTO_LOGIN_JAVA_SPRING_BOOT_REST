@@ -75,4 +75,71 @@ pois no banco de dados o mesmo está como autoincremento.
 
  Criando a atualização de cadastro com o PUT
 
- - 
+ - Quando usamos o eclipse e criamos um projeto com o maven para carregar as 
+ dependencias acontece que o eclipse usa o maven interno dele,  quando é interno
+ não conseguimos usar vários recursos que precisamos no desenvolvimento.
+ - O eclipse também vem com o servidor TomCat interno, também podemos usar o 
+ servidor TomCat de forma externa no eclipse.
+ - Com o Spring Boot se quisermos gerar um arquivo War ou então um Jar 
+ autoexecutável para implantar a nossa aplicação em algum local então iremos 
+ precisar do maven mas não o que está dentro do eclipse.
+ - Precisaremos instalar o maven externamente e por linha de comando dar o 
+ comando de build para gerar o arquivo war/jar para então implantar em algum
+ servidor.
+ 
+ export JAVA_HOME=/usr/local/Cellar/openjdk/15.0.1/libexec/openjdk.jdk/Contents/Home
+ echo ${JAVA_HOME}
+
+ export MAVEN_HOME=/usr/local/Cellar/maven/3.6.3_1
+ echo ${MAVEN_HOME}
+
+ export PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
+
+ export CATALINA_HOME=/usr/local/Cellar/tomcat/9.0.43
+ catalina start 
+
+- Para verificar a versão do maven instalada:  mvn -v
+- Para verificar a versão do TomCat instalado: catalina version
+
+Configurando o contexto da nossa aplicação
+
+- No arquivo application.properties adicionamos a seguinte linha abaixo: 
+    server.servlet.context-path=/cursospringrestapi
+- Para acessar ficara da seguinte forma: http://localhost:8080/cursospringrestapi/
+- É importante configurar o contexto para sabermos qual projeto estamos 
+acessando.
+
+Gerando Jar executável da Aplicação Spring Boot
+
+- O Jar e o War que são arquivos de implantação.
+- Para gerar o arquivo de implantação digitamos: mvn package 
+- O arquivo de implantação será gerado dentro da pasta target
+- O comando mvn package deve ser executado um diretório acima da pasta target
+- Para rodar o arquivo de implantação digitamos:
+    java -jar cursospringrestapi-0.0.1-SNAPSHOT.jar
+- Podemos disponibilizar o arquivo jar para um amigo por exemplo, mas 
+ele deve ter o sistema gerenciador de banco de dados instalado na máquina dele.
+
+Gerando WAR e Implantando no Servidor
+
+- Através do arquivo pom.xml decidimos que tipo de arquivo será gerado
+através da tag packaging, veja abaixo:
+    
+    <packaging>jar</packaging>
+
+- Para gerar o arquivo war é o mesmo comando que usamos para gerar o 
+arquivo jar, digitamos mvn package um diretório acima da pasta target.
+- O arquivo será gerado dentro da pasta target.
+
+    cd /usr/local/Cellar/tomcat/9.0.43/libexec/webapps
+
+- Para acessar o projeto basta somente iniciar o servidor TomCat
+com o comando catalina start e acessar a seguinte url:
+    http://localhost:8080/cursospringrestapi
+
+- Basta colocar o arquivo war do projeto dentro da pasta webapps do servidor
+TomCat.
+
+Criando Relacionamento um para muitos
+
+- http://localhost:8080/cursospringrestapi/usuario/

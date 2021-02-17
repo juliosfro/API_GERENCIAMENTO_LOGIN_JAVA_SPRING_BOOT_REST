@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class IndexController {
 	private UsuarioRepository usuarioRepository;
 
 	/* Método para consultar usuário e venda por id do banco de dados. */
-	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = "application/json")
+	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id,
 			@PathVariable(value = "venda") Long venda) {
 
@@ -37,38 +38,38 @@ public class IndexController {
 	}
 
 	/* Método para consultar usuário por id do banco de dados. */
-	@GetMapping(value = "/{id}", produces = "application/json")
+	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> readById(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
 	}
 
 	/* Método para consultar todos os usuarios do banco de dados */
-	@GetMapping(value = "/", produces = "application/json")
+	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Usuario>> readAll() {
 		List<Usuario> list = (List<Usuario>) usuarioRepository.findAll();
 		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
 	}
 
 	/* Método para salvar um usuario no banco de dados. */
-	@PostMapping(value = "/", produces = "application/json")
+	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 
 	/* Método para atualizar um usuario no banco de dados. */
-	@PutMapping(value = "/", produces = "application/json")
+	@PutMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) {
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 
 	/* Método para deletar um usuário por id do banco de dados. */
-	@DeleteMapping(value = "/{id}", produces = "application/text")
+	@DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> deleteById(@PathVariable(value = "id") Long id) {
-		 usuarioRepository.deleteById(id);
-		 return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
+		usuarioRepository.deleteById(id);
+		return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
 	}
 
 }
