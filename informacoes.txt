@@ -150,4 +150,12 @@ criamos um objeto simples.
 
  Implementando o END-POINT de atualização
 
- xxx.
+    select usuario.id, usuario.login, usuario.nome, usuario.senha, telefone.numero
+    from usuario inner join telefone
+    on usuario.id = telefone.usuario_id;
+
+    select * from telefone;
+
+ Implantando a API na hospedagem
+
+ - xxx

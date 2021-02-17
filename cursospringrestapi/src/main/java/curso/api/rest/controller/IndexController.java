@@ -67,6 +67,12 @@ public class IndexController {
 	/* Método para atualizar um usuario no banco de dados. */
 	@PutMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) {
+
+		/* Para fazer a associção do usuario com o telefone. */
+		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
+			usuario.getTelefones().get(pos).setUsuario(usuario);
+		}
+
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
