@@ -143,3 +143,11 @@ TomCat.
 Criando Relacionamento um para muitos
 
 - http://localhost:8080/cursospringrestapi/usuario/
+
+- Por enquanto temos apenas um objeto simples em nosso banco de dados.
+- Vamos fazer um relacionamento um para muitos que é o mais comum quando
+criamos um objeto simples.
+
+ Implementando o END-POINT de atualização
+
+ xxx.
