@@ -158,4 +158,29 @@ criamos um objeto simples.
 
  Implantando a API na hospedagem
 
- - xxx
+ - No curso de formação de Java Web temos os módulos que ensinam a fazer hospedagem.
+ 
+ cd /Users/julio/Library/Mobile\ Documents/com\~apple\~CloudDocs/cursos/backend-spring-boot-rest/cursospringrestapi
+
+ - Rodar o comando: mvn package
+ - Sempre deixar o nome do arquivo de implantação com o mesmo nome do contexto.
+ - Exemplo do nome do contexto:
+
+    server.servlet.context-path=/cursospringrestapi 
+
+- O nome do contexto fica no arquivo application.properties
+- Temos que colocar o username e a senha do banco que estão na hospedagem.
+- Descompactar o arquivo .war e editar o arquivo application.properties com o 
+notepad++ por exemplo e colocar os dados do banco da hospedagem, usuario e senha.
+- É necessário criar o banco de dados no servidor da hospedagem.
+- Pode ficar localhost o inicio da string da conexão com o banco de dados 
+pois vai subir localmente no servidor da hospedagem.
+- Devemos saber como registrar dominio e contratar hospedagem.
+- É essencial estudar o módulo de hospedagem.
+- Devemos habilitar a API para aceitar solicitação de outra máquina depois
+que ela já estiver hospedada, questões de segurança.
+- Para ter o https de conexão segura deve ser contratado o plano de ssl.
+
+Cross Origin - Controle de acesso a API
+
+xxx.
