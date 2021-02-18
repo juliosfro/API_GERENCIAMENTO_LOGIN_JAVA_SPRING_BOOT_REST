@@ -183,4 +183,48 @@ que ela já estiver hospedada, questões de segurança.
 
 Cross Origin - Controle de acesso a API
 
-xxx.
+- Por motivos de segurança, os navegadores proíbem chamadas ajax para 
+recursos que residem fora da origem atual.
+- Como uma API REST é feita para que vários clientes possam acessar então
+surge o controle de acesso denominado CORS.
+- Podemos fazer bloqueios e liberações bem customizadas para cada end-point,
+para cada controller REST e seus end-point ou até mesmo para todo o projeto 
+e seus end-points.
+
+- Podemos liberar uma API somente para um determinado endereço, somente
+para a empresa de fulano de tal por exemplo.
+- É possível liberar apenas um end-point para uma empresa por exemplo.
+- Toda a parte de segurança é bem customizada.
+
+ Cross Origin - Testando a requisição AJAX
+
+ - Toda API REST em Spring por default bloqueiam chamadas Ajax do jQuery.
+ - Se tiver apenas a anotação @CrossOrigin no cabeçalho da classe controller
+ significa que pode ser acessada de qualquer lugar, ou seja, através de 
+ qualquer mecanismo, através de chamadas Ajax do jQuery por exemplo.
+ - Podemos amarrar um servidor especifico a nossa API, pode ser por 
+ dominio de url por exemplo.
+
+ - Veja abaixo um exemplo:
+    @CrossOrigin(origins = "https://www.projetojavaweb.com/")
+
+- Podemos usar a anotação @CrossOrigin nos end-points, podemos restringir
+o acesso ao método de consultar todos os usuários para apenas um servidor
+por exemplo.
+- Para liberar o acesso a todos deve-se colocar a anotação em cima no 
+cabeçalho do controller, mas se for apenas para um end-point especifico
+então deve-se retirar a anotação do cabeçalho do controller e jogar no
+método que deseja liberar além de estabelecer critérios de liberação.
+
+Configuração Global
+
+- Podemos ter uma API gigante com vários métodos e mais de cem controllers 
+por exemplo.
+- Podemos definir todas as configurações de forma global para a nossa aplicação
+inteira, isto é, incluindo todas os controllers e end-points, isso pode ser 
+feito através da classe que possuí a anotação @SpringBootApplication e também
+o método main()
+
+Configuração Centralizada e Global
+
+- xxx.
