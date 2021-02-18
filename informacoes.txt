@@ -351,6 +351,5 @@ captura as requisições e diz para autenticar.
 - Obs.: Todas as classes começam com JWT para especificar que fazem parte do 
 mesmo grupo que vai lidar com JWT.
 
-Criando a classe JwtLoginFilter
-
-- xxx.
+* Criando a classe JwtLoginFilter
+* JSON Web Token (JWT) - Criando a classe JwtApiAuthenticationFilter
