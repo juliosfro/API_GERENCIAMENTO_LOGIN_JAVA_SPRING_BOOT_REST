@@ -254,4 +254,39 @@ veja abaixo:
 Spring Security - Configurando ROLE
 
 
--xxx.
+- Vamos começar a configuração do Spring Security
+- Só vamos poder acessar nossos métodos da API se for enviado junto um 
+login e uma senha, mais adiante vamos ver sobre jwt que é autenticação por
+token.
+- Além do token tem usuario e senha para fazer a validação da API.
+- Quando estamos trabalhando com REST a camada de front-end não tem uma sessão 
+amarrada igual jsf, jsp ou seja um sistema MVC. O servidor não tem o controle
+que determinado usuário está conectado, então toda requisição tem que ser validada
+com usuario, senha e o token que é um hash (uma senha bem grande criptografada).
+- Primeiro precisamos configurar todo o Spring Security.
+- No Spring Security as nomenclaturas começam com Role que são os papéis, por
+exemplo é um administrador, super-visor, gerente, secretário e etc.
+- precisamos ter a dependencia do Spring Security dentro do pom.xml para o 
+maven poder baixa-la.
+
+- Devemos implementar a interface GrantedAuthority do Spring Security
+na nossa classe Role.
+- Devemos conectar a classe de Usuario com a classe de Role e mapear as 
+tabelas corretamente no banco de dados.
+
+ Spring Security - Configurando Usuário
+
+ - Papéis são usados para permitir ou esconder acessos, esconder url e etc.
+ - Para linkar a classe Usuario com a classe Role devemos implementar a 
+ interface UserDetails no lugar da interface Serializable na classe Usuario.
+ - A interface UserDetails é a interface do Spring Security para trabalhar
+ com autorizações, é uma interface que se conecta com todo o núcleo do Spring
+ Security.
+ - Após implementar a interface UserDetails na classe Usuario seremos obrigados
+ a implementar todos os métodos que a interface UserDetails propõe.
+ - Por padrão todos os métodos do contrato da interface UserDetails venhem 
+ desabilitados como false.
+ 
+  Configurando o Repository e o Service
+
+  - xxx.
