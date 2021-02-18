@@ -8,7 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @EntityScan(basePackages = {
@@ -20,10 +22,22 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc /* Para habilitar o modulo de MVC do Spring */
 @RestController /* Para saber que é um projeto REST que vai retornar Json */
 @EnableAutoConfiguration /* Para o Srping configurar todo o projeto. */
-public class CursospringrestapiApplication {
+public class CursospringrestapiApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursospringrestapiApplication.class, args);
 	}
 
+	/* Configuração Global de controle de acesso que reflete em todo o sistema. */
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+
+		/* Para liberar acesso a todos os controllers e end-points. */
+		/* registry.addMapping("/**"); */
+
+		/* Para todos os end-points que estao dentro do controller /usuario */
+		/* Podemos restringir quais tipos de requisicoes que podem ser enviadas */
+		/* É possivel restringir por origem, ou seja, quem esta requisitando. */
+		registry.addMapping("/usuario/**").allowedMethods("POST").allowedOrigins("https://www.jdvtreinamentos.com.br");
+	}
 }

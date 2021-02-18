@@ -227,4 +227,31 @@ o método main()
 
 Configuração Centralizada e Global
 
-- xxx.
+- Podemos ter um controller para cada regra de negócio.
+- É possível centralizar tudo aonde tem o método SpringApplication que 
+inicializa toda a aplicação.
+- Precisaremos implementar uma interface chamada WebMvcConfigurer na classe
+que da o start incial na aplicação, veja abaixo um exemplo:
+
+    public class CursospringrestapiApplication implements WebMvcConfigurer 
+
+- Através do método addCorsMappings podemos fazer todas as configurações, 
+veja abaixo:
+
+    /* Configuração Global de controle de acesso que reflete em todo o sistema. */
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+
+		/* Para liberar acesso a todos os controllers e end-points. */
+		/* registry.addMapping("/**"); */
+
+		/* Para todos os end-points que estao dentro do controller /usuario */
+		/* Podemos restringir quais tipos de requisicoes que podem ser enviadas */
+		/* É possivel restringir por origem, ou seja, quem esta requisitando. */
+		registry.addMapping("/usuario/**").allowedMethods("POST").allowedOrigins("https://www.jdvtreinamentos.com.br");
+	}
+
+Spring Security - Configurando ROLE
+
+
+-xxx.
