@@ -289,4 +289,15 @@ tabelas corretamente no banco de dados.
  
   Configurando o Repository e o Service
 
-  - xxx.
+  - Agora vamos configurar o Repository e o Service, sendo que o service vai
+  prover um serviço que vai ligar com um repository com acesso ao banco de dados.
+  
+   Configurando o Spring Security
+
+   - Tudo antes de chegar no sistema vai ser interceptado pelo Spring Security,
+   então ele vai fazer a validação, vai verificar se o usuario pode acessar ou 
+   não e etc.
+
+ JSON Web Token (JWT) - Introdução ao JWT
+
+ - 
