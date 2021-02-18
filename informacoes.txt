@@ -300,4 +300,42 @@ tabelas corretamente no banco de dados.
 
  JSON Web Token (JWT) - Introdução ao JWT
 
- - 
+ - O JWT é um padrão (RFC-7519) de mercado que define como transmitir e 
+ armazenar objetos JSON de forma compacta e segura entre diferentes aplicações
+ usando a arquitetura REST ou Microserviços sendo RESTFUL e JSON.
+
+ - Os dados nele contidos podem ser validados a qualquer momento pois o token
+ é assinado digitalmente e sua validação é feita a cada requisição.
+
+ - Ele é formado por três sessões: Header, Payload e Signature.
+
+ - Header: Define informações sobre o tipo do token, nesse caso JWT.
+ - Payload: Contém as informações da entidade autorizada no caso o usuário que
+ fez o login.
+ - Signature: A assinatura é a junção de todas as partes somando a uma chave de 
+ assinatura ou certificado e tudo é codificado em Base64.
+
+- Vantagens: Permite a comunicação segura entre diferentes sistemas e integrações,
+também evita que os dados sejam capturados por rede e manipulados de forma errada 
+por alguém com más intenções.
+- Vamos unir as validações de login com usuario e senha com o JWT.
+- As vezes não precisa do usuario e senha mas é obrigatório o token (JWT), pois 
+ele tem toda uma assinatura, cabeçalho, informações, é possível validar até 
+com certificado digital.
+- Se eu fosse gerar uma nota fiscal eu teria que enviar um JSON para o 
+servidor reconhecer que eu tenho autorização para gerar uma nota fiscal. 
+
+- Em integrações com APIs sempre tem um token por trás.
+- O JWT é gerado somente depois do usuario e senha serem validados, então
+o servidor retorna o JWT para o cliente (navegador), depois o cliente 
+responde para o servidor devolvendo o JWT para confirmar que ele ainda continua
+logado.
+- O JWT pode ser devolvido para o servidor no cabeçalho da requisição se for
+por método GET ou no corpo da requisição se for por método POST.
+- Quando trabalhamos com JWT não precisamos validar o usuário pela segunda vez
+pois no token já esta a validação completa.
+- Toda vez que for fazer uma requisição após o login será necessário entregar o token.
+
+ JSON Web Token (JWT) - Estrutura de classes do projeto
+
+ - xxx...
