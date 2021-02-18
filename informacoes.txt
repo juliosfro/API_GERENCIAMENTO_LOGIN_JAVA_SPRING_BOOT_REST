@@ -338,4 +338,19 @@ pois no token já esta a validação completa.
 
  JSON Web Token (JWT) - Estrutura de classes do projeto
 
- - xxx...
+ - WebConfigSecurity mapeia toda a parte de segurança e registra as classes de token.
+ - Iremos criar 3 classes sendo que elas trabalham juntas, cada classe terá uma 
+ responsabilidade, tudo será mapeado pelo Spring Security.
+ 
+ - JWTLoginFilter: Extende de AbstractAuthenticationProcessingFilter e estabelece 
+nosso gerenciador de token.
+- JWTAPIAutenticacaoFilter: Extende de GenericFilterBean, é o nosso filtro que 
+captura as requisições e diz para autenticar.
+- WebConfigSecurity extende de WebSecurityConfigurerAdapter.
+- JWTTokenAutenticacaoService: Gera o nosso token e também valida o token enviado.
+- Obs.: Todas as classes começam com JWT para especificar que fazem parte do 
+mesmo grupo que vai lidar com JWT.
+
+Criando a classe JwtLoginFilter
+
+- xxx.
