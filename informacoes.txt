@@ -363,8 +363,94 @@ mesmo grupo que vai lidar com JWT.
 - Com o usuario e senha no formato JSON, veja abaixo um exemplo:
     
         {
-        "login": "marcela",
-        "senha": "123"
+            "login": "marcela",
+            "senha": "123"
         }
 
-- xxx...
+- É necessário que a senha 123 do exemplo acima já esteja criptografada
+no banco de dados com o BCryptPasswordEncoder, classe do Spring Security.
+
+JSON Web Token (JWT) - Ententendo a geração do JWT
+
+- Dando sucesso no login terá que ser retornado o código 200 de ok,
+além de retornar o código token gerado no corpo da requisição, veja um exemplo abaixo:
+
+    {"Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9
+    .eyJzdWIiOiJtYXJjZWxhIiwiZXhwIjoxNjEzOTEwNjc3fQ
+    ._tfNs1lfwTNP22E3S-4JktHOp6_-m5rzoEEJMVi5uv7rWC7wh5c7T_3ce_DAwxpR2mzLkxJJWt86fljEfptyKw"}
+
+- O código de autorização é dividido em três partes como podemos ver acima.
+- O próximo passo é devolver o código gerado quando for fazer a próxima requisição,
+- somente assim conseguiremos cadastrar, atualizar, deletar, consultar e fazer 
+- outras operações.
+
+Consultando e Deletando
+
+- Agora vamos entender como consumir os end-points da nossa API RESTFULL.
+- Para testar nossa API RESTFUL no postman para fazer uma consulta de usuario
+por exemplo precisamos passar nosso token de autorização na aba Authorization
+do postman, em type selecionamos Bearer Token e colamos nosso no token no campo,
+o token deve ser adicionado sem sua parte inicial, ou seja, sem o Bearer e o 
+espaço em branco, como no exemplo abaixo.
+
+    eyJhbGciOiJIUzUxMiJ9
+    .eyJzdWIiOiJtYXJjZWxhIiwiZXhwIjoxNjEzOTE1MzQ3fQ
+    .oAWXa3nmkUR8YRRVeC5wjn6Y4tU2-4DTaDPQDwpTmbdCOSL0zTWFqpWQwDJzJ3iggngShD8guMhmvU-8IWcNWQ
+
+- Enviamos a requisição do tipo GET para http://localhost:8080/cursospringrestapi/usuario/1
+para consultar o usuario que possui o id numero 1, a solicitção foi feita já
+com o token implantado no campo de token da aba Authorization do postman.
+
+- Exemplo do que é retornado na consulta:
+        {
+            "id": 1,
+            "login": "marcela",
+            "senha": "$2a$10$WWwHPGVucL3claX0oh9ttOthlmM0kTYgUzTVDqywfWRutusIczQ3u",
+            "nome": "marcela",
+            "telefones": [],
+            "enabled": true,
+            "password": "$2a$10$WWwHPGVucL3claX0oh9ttOthlmM0kTYgUzTVDqywfWRutusIczQ3u",
+            "authorities": [],
+            "username": "marcela",
+            "accountNonExpired": true,
+            "accountNonLocked": true,
+            "credentialsNonExpired": true
+        }
+
+- Podemos filtrar o que vai ser retornado no JSON.
+- Também podemos passar o token no Header para fazer a requisição GET através do
+postman, na aba Headerers passamos em key o nome Authorization e em value o 
+nome Bearer espaço seguido da nossa chave token, funciona da mesma forma.
+- Para consultar todos os usuarios enviamos uma requisição GET para 
+http://localhost:8080/cursospringrestapi/usuario/ com as credenciais de token 
+no corpo da requisição (Header) ou em Authorization no postman.
+
+- Para deletar um usuario fazemos uma requisição do tipo DELETE para o end-point 
+http://localhost:8080/cursospringrestapi/usuario/2 passando o id do usuario que 
+queremos deletar, também é necessário passar a chave de autenticação no Header 
+ou senão defini-lá em Authorization no postman.
+
+JSON Web Token (JWT) - Cadastrando e editando
+
+- O próximo passo agora é testar se nossa API está cadastrando e editando, 
+se estiver então nossa API RESTFULL estará concluída.
+
+- Cada usuario e senha tem um token exclusivo amarrado a ele, para gerar um 
+novo token é necessário cadastrar um novo usuario no banco de dados
+com id e login diferentes.
+
+- Por enquanto eu não sei como destruir um token.
+- Abaixo esta o token de autorização para o usuario e senha abaixo.
+
+        {
+            "login":"julio",
+            "senha":"123"
+        }
+
+{"Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqdWxpbyIsImV4cCI6MTYxMzkyODU0M30.sHcng1iZdPw1zcgtnjVIrkzQXgpIBQNLZCD7PuLUN61YY0WovQA_oRAlgAOJjrC4DmcJtU9cPOS7-LYBw5LdMQ"}
+
+- O usuario deve ser único no banco de dados para poder ser feita a validação.
+
+Restringindo dados do usuário
+
+-xxxx.
