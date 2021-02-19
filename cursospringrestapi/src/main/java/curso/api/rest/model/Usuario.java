@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +21,8 @@ import javax.persistence.UniqueConstraint;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity /* Significa que vai ser uma tabela no banco de dados. */
 public class Usuario implements UserDetails {
 
@@ -32,7 +35,10 @@ public class Usuario implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	/* Nosso atributo login não pode se repetir. */
+	@Column(unique = true)
 	private String login;
+	
 	private String senha;
 	private String nome;
 
@@ -64,6 +70,7 @@ public class Usuario implements UserDetails {
 		this.login = login;
 	}
 
+	/* Se colocar @JsonIgnore aqui o login para de funcionar. */
 	public String getSenha() {
 		return senha;
 	}
@@ -120,35 +127,45 @@ public class Usuario implements UserDetails {
 		return this.roles;
 	}
 
+	/*
+	 * Colocamos @@JsonIgnore para não trazer o password quando for montar o JSON.
+	 */
+	@JsonIgnore
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
 		return this.senha;
 	}
 
+	@JsonIgnore
 	@Override
 	public String getUsername() {
 		return this.login;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
+	/* Para não montar o atributo enabled no JSON. */
+	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub

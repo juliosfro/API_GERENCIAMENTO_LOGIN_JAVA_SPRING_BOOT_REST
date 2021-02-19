@@ -80,10 +80,17 @@ public class IndexController {
 		}
 
 		/*
-		 * Quando for atualizar um usuario é necessario criptografar a senha novamente
+		 * Verificar se a senha já existe no banco de dados, se existe não criptografar,
+		 * se não existe significa que é uma nova senha então criptografa.
 		 */
-		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-		usuario.setSenha(senhaCriptografada);
+
+		Usuario usuarioTemp = usuarioRepository.findUserByLogin(usuario.getLogin());
+		/* Se as senhas forem diferentes então criptografa e atualiza. */
+		if (!usuarioTemp.getSenha().equals(usuario.getSenha())) {
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+			usuario.setSenha(senhaCriptografada);
+		}
+
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}

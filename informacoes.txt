@@ -453,4 +453,31 @@ com id e login diferentes.
 
 Restringindo dados do usuário
 
--xxxx.
+- Devemos restringir dizendo que nosso atributo login da tabela de usuario é único,
+- Podemos ignorar vários atributos na hora de montar o JSON menos o login e a senha,
+senão fica impossível de realizar o login.
+
+JSON Web Token (JWT) - Atualizando senha do usuário
+
+- Não podemos criptografar novamente a senha que já está criptografada, temos que 
+verificar se a senha que veio na hora de atualizar é igual a senha que está 
+gravada no banco de dados, se for igual então significa que ela está criptografada,
+se for diferente então devemos chamar o método de criptografia.
+
+Versionamento de API
+
+- Podemos liberar várias versões de um mesmo projeto mas com rotinas diferentes,
+podemos ter duas versões de um método dentro do mesmo controller,
+se por exemplo a versão 2 der problema o cliente pode voltar a usar a versão 1.
+
+- Se não quisermos usar o versionamento pela URI então devemos usar uma váriavel
+no headers especificando a versão, por exemplo X-API-Version=v1
+
+- Siginifica que a versão 1 da API será consumida.
+- Dentro de @GetMapping() podemos usar o atributo headers, por exemplo
+headers = "X-API-Version=v1", podemos passar isso no headers pelo postman, sendo
+que X-API-Version é o headers e o value é v1.
+
+Pool de conexão com Hikari
+
+ - xxx.
