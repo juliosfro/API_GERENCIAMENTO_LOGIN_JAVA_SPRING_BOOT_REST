@@ -353,3 +353,18 @@ mesmo grupo que vai lidar com JWT.
 
 * Criando a classe JwtLoginFilter
 * JSON Web Token (JWT) - Criando a classe JwtApiAuthenticationFilter
+
+- Por último precisamos terminar de configurar a classe WebConfigSecurity.
+
+- Vamos testar se o nosso token JWT foi gerado corretamente.
+- O login no Spring Security deverá ser sempre por POST.
+- Para testar nossa API de login enviamos uma requisição POST para
+    http://localhost:8080/cursospringrestapi/login
+- Com o usuario e senha no formato JSON, veja abaixo um exemplo:
+    
+        {
+        "login": "marcela",
+        "senha": "123"
+        }
+
+- xxx...
