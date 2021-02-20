@@ -2,6 +2,7 @@ package curso.api.rest.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,6 +30,8 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
 				/* Abaixo esta dizendo que a parte inicial do sistema será publica. */
 				.disable().authorizeRequests().antMatchers("/").permitAll().antMatchers("/index").permitAll()
 
+				/* Para aceitar requisicoes de todos os metodos do HTTP */
+				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				/* URL de logout que redireciona após o user deslogar do sistema. */
 				.anyRequest().authenticated().and().logout().logoutSuccessUrl("/index")
 

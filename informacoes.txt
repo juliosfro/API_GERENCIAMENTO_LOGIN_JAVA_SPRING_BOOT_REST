@@ -589,4 +589,14 @@ e trazer para o usuario, exemplo 	@CachePut("cache_usuarios")
 
 JSON Web Token (JWT) - Autenticação com TOKEN em banco de dados
 
-- xxx...
+- Vamos uma validação com o token a nivel de banco de dados, por exemplo geramos um token para um 
+usuario assim que cadastramos ele.
+- Para cada usuário podemos ter um token cadastrado pra ele no banco de dados, a requisição só
+será aceita se esse token for validado em nível de banco de dados. 
+- Precisamos criar uma coluna na tabela de usuario para guardar o token do usuário no banco de
+dados.
+
+Controle de erros da API com @ControllerAdvice, @RestControllerAdvice e @ExceptionHandler
+
+- Precisamos centralizar em um único ponto todos os lançamentos de exceções de nossa API.
+- 

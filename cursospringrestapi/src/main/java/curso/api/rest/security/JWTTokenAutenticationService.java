@@ -55,6 +55,9 @@ public class JWTTokenAutenticationService {
 		/* Adiciona no cabeçalho HTTP */
 		response.addHeader(HEADER_STRING, token);
 
+		/* Liberando respostas para portas diferentes que usam a API ou caso clientes web */
+		liberacaoCors(response);
+
 		/* Escreve token como resposta no corpo HTTP */
 		response.getWriter().write("{\"Authorization\": \"" + token + "\"}");
 	}
@@ -63,15 +66,18 @@ public class JWTTokenAutenticationService {
 	 * Método para retornar o usuario validado com token, caso não seja válido
 	 * retorna null
 	 */
-	public Authentication getAuthentication(HttpServletRequest request) {
+	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		/* Pega o token enviado no cabeçalho HTTP. */
 		String token = request.getHeader(HEADER_STRING);
 
 		/* Vamos fazer uma verificação se existe token. */
 		if (token != null) {
+
+			String token_limpo = token.replace(TOKEN_PREFIX, "").trim();
+
 			/* Faz a validação do token do usuario na requisicao */
-			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
+			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token_limpo).getBody()
 					.getSubject();
 
 			if (user != null) {
@@ -79,11 +85,33 @@ public class JWTTokenAutenticationService {
 						.findUserByLogin(user);
 				/* Precisamos retornar o usuario logado */
 				if (usuario != null) {
-					return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(),
-							usuario.getAuthorities());
+					/* Verifica se o token que o usuario esta passando é igual ao que esta no banco de dados. */
+					if (token_limpo.equalsIgnoreCase(usuario.getToken())) {
+						return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(),
+								usuario.getAuthorities());
+					}
 				}
 			}
 		}
+		liberacaoCors(response);
 		return null;
+	}
+
+	private void liberacaoCors(HttpServletResponse response) {
+		if(response.getHeader("Access-Control-Allow-Origin") == null ){
+			response.addHeader("Access-Control-Allow-Origin", "*");
+		}
+
+		if(response.getHeader("Access-Control-Allow-Headers") == null ){
+			response.addHeader("Access-Control-Allow-Headers ", "*");
+		}
+
+		if(response.getHeader("Access-Control-Request-Headers ") == null){
+			response.addHeader("Access-Control-Request-Headers ", "*");
+		}
+
+		if(response.getHeader("Access-Control-Allow-Methods") == null){
+			response.addHeader("Access-Control-Allow-Methods", "*");
+		}
 	}
 }
