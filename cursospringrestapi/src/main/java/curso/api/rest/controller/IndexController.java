@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +45,8 @@ public class IndexController {
 
 	/* Método para consultar usuário por id do banco de dados. */
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Cacheable("cache_usuario")
+	@CacheEvict(value = "cache_usuario", allEntries = true)
+	@CachePut("cache_usuario")
 	public ResponseEntity<Usuario> readById(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
@@ -53,12 +56,13 @@ public class IndexController {
 	/* Vamos supor que o carregamento de usuarios seja um processo lento
 	*  e queremos controlar ele com cache para agilizar o processo. */
 	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Cacheable("cache_usuarios")
+	@CacheEvict(value = "cache_usuarios", allEntries = true)
+	@CachePut("cache_usuarios")
 	public ResponseEntity<List<Usuario>> readAll() throws InterruptedException {
 		List<Usuario> list = (List<Usuario>) usuarioRepository.findAll();
 
 		/* Segura o codigo por 6 segundos simulando um processo lento */
-		Thread.sleep(6000);
+		// Thread.sleep(6000);
 		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
 	}
 

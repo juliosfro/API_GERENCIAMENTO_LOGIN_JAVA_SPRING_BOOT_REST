@@ -87,6 +87,8 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.11.4" />
           <element id="library" level="project" name="Maven: com.zaxxer:HikariCP:3.4.5" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.30" />
+          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-cache:2.4.1" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context-support:5.3.3" />
         </element>
       </element>
       <element id="directory" name="META-INF">

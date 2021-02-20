@@ -571,6 +571,22 @@ o usuario.
 - O spring sabe se tem coisa nova no banco de dados ou não, se tiver coisa nova ele busca no banco,
 se não tiver ele disponibiliza através da memória.
 
-Conhecendo diferença entre CacheEvict e o CachePUTBaixar
+Conhecendo diferença entre CacheEvict e o CachePUT
 
-- xxx.
+- Tem que tomar cuidado para o cache não sobrecarregar e explodir por alta demanda de dados dentro dele,
+se o cache explodir por falta de memória o servidor precisa ser reiniciado para reestabelecer tudo.
+
+- O cache deve ser atualizado de acordo com alguma mudança, se houve mudança então busca no banco de 
+dados e atualiza o cache, é necessário configurar para não ficar segurando o cache por muito tempo,
+cache que não é atualizado há muito tempo precisa ser removido.
+
+- Devemos usar @CacheEvict ao invés de @Cacheable, exemplo @CacheEvict("cache_usuarios")
+- @CachePut serve para quando adicionarmos registro novo no banco de dados o cache indentificar
+e trazer para o usuario, exemplo 	@CachePut("cache_usuarios")
+- @CacheEvict: é utilizado nos métodos que alteram os dados, para limpar o cache.
+- A cada chamada aos métodos que alteram o estado da tabela, o @CacheEvict é executado limpando o cache.
+- @CachePut que faz expiração do cache após a atualização do registro de acordo com a chave.
+
+JSON Web Token (JWT) - Autenticação com TOKEN em banco de dados
+
+- xxx...
