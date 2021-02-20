@@ -551,4 +551,26 @@ por exemplo salvar um usuario no banco de dados.
 
 Implementando o cache para performance
 
-- xxx...
+- Além do pool de conexões aonde o próprio framework no caso o Hikari consegue criar 
+várias instancias da conexão e deixar preparado para quando houver requisições atende-las.
+
+- Processos do nosso sistema, independente de qual arquitetura esteja usando, JSP, JSF, RESTFULL,
+podem existir processos que são muito requisitados, por exemplo um relatório de média que é 
+acessado de hora em hora, a questão é que esse relatório só muda a cada hora, vamos supor que nessa 
+hora sejam feitas 100 requisições, ou seja, 100 pessoas imprimiram esse relatório, então toda vez
+que uma das 100 pessoas fosse imprimir teria que ir no banco de dados e fazer todo o processo de 
+consulta para mostrar sempre o mesmo resultado para cada uma das 100 pessoas. Então existem coisas 
+que podem ficar em cache na memória na memória do servidor para ser mais rápido para mostrar para 
+o usuario.
+
+- Temos que adicionar a dependencia do spring-boot-starter-cache
+- Adicionar no cabeçalho da classe que da o start na nossa aplicação a anotação @EnableCaching
+- Adicionar no cabeçalho do método que chama o end-point que vamos acessar a anotação @Cacheable("cache_usuarios")
+- Temos que sempre dar um nome para a anotação @Cacheable
+- Podemos adicionar cacheamento em todos os métodos de requisição se quisermos
+- O spring sabe se tem coisa nova no banco de dados ou não, se tiver coisa nova ele busca no banco,
+se não tiver ele disponibiliza através da memória.
+
+Conhecendo diferença entre CacheEvict e o CachePUTBaixar
+
+- xxx.
