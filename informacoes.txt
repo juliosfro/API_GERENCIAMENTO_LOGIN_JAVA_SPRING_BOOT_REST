@@ -480,4 +480,75 @@ que X-API-Version é o headers e o value é v1.
 
 Pool de conexão com Hikari
 
- - xxx.
+ - No back-end quando temos um sistema, independente de ser uma API simples 
+ ou de arquitetura RESTFULL ou até mesmo MVC, sempre haverá um pool de conexões
+ trabalhando por trás só que as configurações básicas são muito básicas.
+
+ - Quando precisamos de bastante performance, ou seja, muitos clientes se 
+ conectando e fazendo operações no banco de dados, para ter performance e 
+ maior agilidade do sistema nós temos que configurar um pool de conexões.
+
+ - Quando um projeto sobe é iniciado um servidor interno, o apache TomCat 
+ por exemplo, então ele vai conectar no banco de dados e ali fica uma conexão
+ direta, quando há várias pessoas conectadas ao mesmo tempo e fazendo operações
+ de inserir, consultar e etc., se tiver apenas uma conexão sendo gerenciada 
+ então começa a ficar lento porque se há vários usuários então gera uma fila 
+ para o banco de dados fazer as operações e demoraria para salvar por exemplo.
+
+ - O pool de conexão faz uma cópia virtual da conexão existente, então tem 
+ uma conexão única pai e ele cria várias outras a mais que podemos configurar,
+ essas conexões ficam esperando requisições (o cliente), que são pessoas que
+ estão usando o sistema pedirem para salvar ou fazer qualquer outra operação,
+ por exemplo se houver dez conexões nesse pool então vai acontecer tudo
+ instantaneamente.
+
+ - Quando o assunto é performance além do código devemos focar no pool
+ de conexões, uma das ferramentas usadas no Spring Boot para pool e que 
+ tem uma integração super fácil é o Hikari.
+
+ - O Hikari é usado para gerenciar fluxo de conexões, então ele cria várias 
+ conexões que iremos configurar e fica esperando, quando as requisições 
+ chegam ele automaticamente já faz a operação e o sistema fica rápido.
+
+ - A primeira coisa que devemos fazer para colocar o pool de conexões 
+ junto com o Srping Boot é ir no arquivo pom.xml do maven e adicionar 
+ a dependencia do Hikari.
+
+ - A dependencia se chama HikariCP.
+ - Toda a configuração do pool de conexões é feita no arquivo application.properties.
+ - Exemplo de uma configuração:
+
+    # Número máximo de milisegundos que um cliente aguardará por uma conexão
+    spring.datasource.hikari.connection-timeout = 20000
+
+- No exemplo acima um cliente aguardará por 20 segundos para uma requisição
+responder, se não houver resposta ao final desses 20 segundos então ocorrerá 
+um erro de timeout.
+
+- Se dentro desses 20 segundos houver uma alguma conexão liberada então o 
+pool vai receber essa requisição e vai fazer o processo que tem que fazer,
+por exemplo salvar um usuario no banco de dados.
+
+    # Número máximo de conexões inativas mantidas pelo HirakiCP em um conjunto de conexões
+    spring.datasource.hikari.minimum-idle = 10
+
+- Acima é o número máximo de conexões que podem ficar em memória inativas.
+
+    # Máximo do pool de conexão
+    spring.datasource.hikari.maximum-pool-size = 40
+
+- Se for um sistema grande pode deixar para aceitar 40 requisições ao mesmo tempo.
+
+    # Tempo ocioso para conexão 
+    spring.datasource.hikari.idle-timeout=10000
+
+- Se uma conexão ficar inativa por 10 segundos então ela é destruída.
+
+- Para dar commit automático no banco de dados.
+
+    # Salvando dados no banco de dados automaticamente
+    spring.datasource.hikari.auto-commit=true
+
+Implementando o cache para performance
+
+- xxx...
