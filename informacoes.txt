@@ -599,4 +599,11 @@ dados.
 Controle de erros da API com @ControllerAdvice, @RestControllerAdvice e @ExceptionHandler
 
 - Precisamos centralizar em um único ponto todos os lançamentos de exceções de nossa API.
-- 
+- Quando temos um processo de API temos que retornar para o usuário uma mensagem com o 
+erro exato do que está acontecendo.
+- Vamos criar uma classe para interceptar as exceções e retornar para o cliente de uma forma 
+mais bonita.
+
+Tratamento do TOKEN Expirado
+
+-xxx.
