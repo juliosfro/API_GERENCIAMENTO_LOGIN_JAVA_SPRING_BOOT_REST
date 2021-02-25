@@ -1,12 +1,18 @@
 package curso.api.rest.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.gson.Gson;
+import curso.api.rest.model.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +53,9 @@ public class IndexController {
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@CacheEvict(value = "cache_usuario", allEntries = true)
 	@CachePut("cache_usuario")
-	public ResponseEntity<Usuario> readById(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<UsuarioDTO> readById(@PathVariable(value = "id") Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
-		return new ResponseEntity<Usuario>(usuario.get(), HttpStatus.OK);
+		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 
 	/* Método para consultar todos os usuarios do banco de dados */
@@ -68,12 +74,37 @@ public class IndexController {
 
 	/* Método para salvar um usuario no banco de dados. */
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
+	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) throws Exception {
 
 		/* Para fazer a associção do usuario com o telefone. */
 		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
 			usuario.getTelefones().get(pos).setUsuario(usuario);
 		}
+
+		/* Consumindo API publica externa ViaCep... */
+
+		URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
+		URLConnection connection = url.openConnection();
+		InputStream inputStream = connection.getInputStream();
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+		String cep = "";
+		StringBuilder jsonCep = new StringBuilder();
+
+		while (( cep = bufferedReader.readLine()) != null) {
+			jsonCep.append(cep);
+		}
+
+		// System.out.println(jsonCep.toString());
+
+		Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
+
+		usuario.setCep(usuarioAuxiliar.getCep());
+		usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
+		usuario.setComplemento(usuarioAuxiliar.getComplemento());
+		usuario.setBairro(usuarioAuxiliar.getBairro());
+		usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
+		usuario.setUf(usuarioAuxiliar.getUf());
 
 		/* Para criptografar a senha antes de salva-la no banco de dados */
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());

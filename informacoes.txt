@@ -606,4 +606,25 @@ mais bonita.
 
 Tratamento do TOKEN Expirado
 
--xxx.
+"TOKEN Expirado, faça login ou informe novo TOKEN"
+
+Padrão DTO (Data Transfer Object) dentro de uma API ou projeto
+
+- Se temos por exemplo os dados do usuario e queremos apenas trafegar os dados de um 
+lado para outro, mas queremos esconder os nomes dos atributos reais, usamos DTO para 
+não haver necessidade de mecher na classe de persistencia dos dados.
+
+- Na tabela de usuario além dos atributos também temos os dados de acesso ao banco 
+de dados, como configurações de chaves estrangeiras, e etc.
+
+- Podemos ter uma classe DTO para carregar somente o nome, login e o cpf por exemplo.
+- Mesmo existindo a anotação no Spring que o oculta os atributos na hora de montar o 
+objeto JSON mas isso pode quebrar toda a regra de negócio da API.
+- Usamos DTO quando queremos trafegar dados e esconder atributos da classe principal 
+de persistencia.
+
+ Atualizando TOKEN em novo loginBaixar
+
+- Precisamos fazer um Update no banco de dados toda vez que um token é registrado 
+para o usuario.
+- 

@@ -38,9 +38,16 @@ public class Usuario implements UserDetails {
 	/* Nosso atributo login não pode se repetir. */
 	@Column(unique = true)
 	private String login;
-	
 	private String senha;
 	private String nome;
+	private String Cpf;
+
+	private String cep;
+	private String bairro;
+	private String logradouro;
+	private String complemento;
+	private String localidade;
+	private String uf;
 
 	/* Um usuário tem vários telefones. */
 	@OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -104,6 +111,64 @@ public class Usuario implements UserDetails {
 	public void setTelefones(List<Telefone> telefones) {
 		this.telefones = telefones;
 	}
+
+	public String getCpf() {
+		return Cpf;
+	}
+
+	public void setCpf(String cpf) {
+		Cpf = cpf;
+	}
+
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
+	}
+
+	public String getLogradouro() {
+		return logradouro;
+	}
+
+	public void setLogradouro(String logradouro) {
+		this.logradouro = logradouro;
+	}
+
+	public String getComplemento() {
+		return complemento;
+	}
+
+	public void setComplemento(String complemento) {
+		this.complemento = complemento;
+	}
+
+	public String getLocalidade() {
+		return localidade;
+	}
+
+	public void setLocalidade(String localidade) {
+		this.localidade = localidade;
+	}
+
+	public String getUf() {
+		return uf;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
+
 
 	@Override
 	public int hashCode() {

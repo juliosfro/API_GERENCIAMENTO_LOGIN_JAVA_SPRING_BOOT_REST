@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -55,6 +56,10 @@ public class JWTTokenAutenticationService {
 		/* Adiciona no cabeçalho HTTP */
 		response.addHeader(HEADER_STRING, token);
 
+		/* Para atualizar o token do usuario no banco de dados */
+		ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
+				.upDateTokenUser(JWT, username);
+
 		/* Liberando respostas para portas diferentes que usam a API ou caso clientes web */
 		liberacaoCors(response);
 
@@ -72,25 +77,33 @@ public class JWTTokenAutenticationService {
 		String token = request.getHeader(HEADER_STRING);
 
 		/* Vamos fazer uma verificação se existe token. */
-		if (token != null) {
+		try {
+			if (token != null) {
 
-			String token_limpo = token.replace(TOKEN_PREFIX, "").trim();
+				String token_limpo = token.replace(TOKEN_PREFIX, "").trim();
 
-			/* Faz a validação do token do usuario na requisicao */
-			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token_limpo).getBody()
-					.getSubject();
+				/* Faz a validação do token do usuario na requisicao */
+				String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token_limpo).getBody()
+						.getSubject();
 
-			if (user != null) {
-				Usuario usuario = ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
-						.findUserByLogin(user);
-				/* Precisamos retornar o usuario logado */
-				if (usuario != null) {
-					/* Verifica se o token que o usuario esta passando é igual ao que esta no banco de dados. */
-					if (token_limpo.equalsIgnoreCase(usuario.getToken())) {
-						return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(),
-								usuario.getAuthorities());
+				if (user != null) {
+					Usuario usuario = ApplicationContextLoad.getApplicationContext().getBean(UsuarioRepository.class)
+							.findUserByLogin(user);
+					/* Precisamos retornar o usuario logado */
+					if (usuario != null) {
+						/* Verifica se o token que o usuario esta passando é igual ao que esta no banco de dados. */
+						if (token_limpo.equalsIgnoreCase(usuario.getToken())) {
+							return new UsernamePasswordAuthenticationToken(usuario.getLogin(), usuario.getSenha(),
+									usuario.getAuthorities());
+						}
 					}
 				}
+			} /* Fim da condicao token */
+		} catch (ExpiredJwtException e){
+			try {
+				response.getOutputStream().println("TOKEN Expirado, faça login ou informe novo TOKEN");
+			} catch (IOException ioException) {
+
 			}
 		}
 		liberacaoCors(response);
