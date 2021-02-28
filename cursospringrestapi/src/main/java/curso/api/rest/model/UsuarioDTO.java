@@ -6,37 +6,56 @@ import java.io.Serializable;
 public class UsuarioDTO implements Serializable {
 
     private static final long serialVersionUID = 1l;
-    private String userNome;
-    private String userCPF;
-    private String userLogin;
+    private Long id;
+    private String nome;
+    private String login;
+    private String cpf;
+    private String senha;
 
     public UsuarioDTO(Usuario usuario) {
-        this.userNome = usuario.getNome();
-        this.userLogin = usuario.getLogin();
-        this.userCPF = usuario.getCpf();
+        this.nome = usuario.getNome();
+        this.login = usuario.getLogin();
+        this.cpf = usuario.getCpf();
+        this.id = usuario.getId();
+        this.senha = usuario.getSenha();
     }
 
-    public String getUserLogin() {
-        return userLogin;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserLogin(String userLogin) {
-        this.userLogin = userLogin;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getUserNome() {
-        return userNome;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setUserNome(String userNome) {
-        this.userNome = userNome;
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+    public String getLogin() {
+        return login;
     }
 
-    public String getUserCPF() {
-        return userCPF;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
-    public void setUserCPF(String userCPF) {
-        this.userCPF = userCPF;
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 }

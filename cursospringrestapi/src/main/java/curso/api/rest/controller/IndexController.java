@@ -72,6 +72,15 @@ public class IndexController {
 		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
 	}
 
+	/* End-Point de consulta de usuario por nome */
+	@GetMapping(value = "/usuarioPorNome/{nome}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@CacheEvict(value = "cache_usuarios", allEntries = true)
+	@CachePut("cache_usuarios")
+	public ResponseEntity<List<Usuario>> readUserByName(@PathVariable("nome") String nome) throws InterruptedException {
+		List<Usuario> list = (List<Usuario>) usuarioRepository.findUserByName(nome);
+		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
+	}
+
 	/* Método para salvar um usuario no banco de dados. */
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) throws Exception {
@@ -83,28 +92,28 @@ public class IndexController {
 
 		/* Consumindo API publica externa ViaCep... */
 
-		URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
-		URLConnection connection = url.openConnection();
-		InputStream inputStream = connection.getInputStream();
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+		//URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
+		//URLConnection connection = url.openConnection();
+		//InputStream inputStream = connection.getInputStream();
+		//BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
-		String cep = "";
-		StringBuilder jsonCep = new StringBuilder();
+		//String cep = "";
+		//StringBuilder jsonCep = new StringBuilder();
 
-		while (( cep = bufferedReader.readLine()) != null) {
-			jsonCep.append(cep);
-		}
+	//	while (( cep = bufferedReader.readLine()) != null) {
+	//		jsonCep.append(cep);
+	//	}
 
 		// System.out.println(jsonCep.toString());
 
-		Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
+		//Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
 
-		usuario.setCep(usuarioAuxiliar.getCep());
-		usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
-		usuario.setComplemento(usuarioAuxiliar.getComplemento());
-		usuario.setBairro(usuarioAuxiliar.getBairro());
-		usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
-		usuario.setUf(usuarioAuxiliar.getUf());
+		//usuario.setCep(usuarioAuxiliar.getCep());
+		//usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
+		//usuario.setComplemento(usuarioAuxiliar.getComplemento());
+		//usuario.setBairro(usuarioAuxiliar.getBairro());
+		//usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
+		//usuario.setUf(usuarioAuxiliar.getUf());
 
 		/* Para criptografar a senha antes de salva-la no banco de dados */
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
@@ -127,7 +136,8 @@ public class IndexController {
 		 * se não existe significa que é uma nova senha então criptografa.
 		 */
 
-		Usuario usuarioTemp = usuarioRepository.findUserByLogin(usuario.getLogin());
+		Usuario usuarioTemp = usuarioRepository.findById(usuario.getId()).get();
+
 		/* Se as senhas forem diferentes então criptografa e atualiza. */
 		if (!usuarioTemp.getSenha().equals(usuario.getSenha())) {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
