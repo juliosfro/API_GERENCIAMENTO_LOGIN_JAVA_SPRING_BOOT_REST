@@ -1,6 +1,5 @@
 package curso.api.rest.exception;
 
-
 import java.util.Date;
 
 public class ErrorDetails {
@@ -36,9 +35,9 @@ public class ErrorDetails {
             this.details = details;
         }
         public String getCode() {
-        return code;
+            return code;
     }
         public void setCode(String code) {
-        this.code = code;
+            this.code = code;
     }
 }

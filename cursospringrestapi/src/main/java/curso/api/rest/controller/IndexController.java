@@ -81,40 +81,15 @@ public class IndexController {
 
 	/* Método para salvar um usuario no banco de dados. */
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario usuario, BindingResult br) throws Exception {
+	public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) throws Exception {
 
-		if (br.hasErrors()) {
-			throw new IllegalArgumentException(br.getAllErrors().get(0).getDefaultMessage());
+		if (bindingResult.hasErrors()) {
+			throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage());
 		} else {
 			/* Para fazer a associção do usuario com o telefone. */
 			for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
 				usuario.getTelefones().get(pos).setUsuario(usuario);
 			}
-
-			/* Consumindo API publica externa ViaCep... */
-
-			//URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
-			//URLConnection connection = url.openConnection();
-			//InputStream inputStream = connection.getInputStream();
-			//BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-			//String cep = "";
-			//StringBuilder jsonCep = new StringBuilder();
-
-			//	while (( cep = bufferedReader.readLine()) != null) {
-			//		jsonCep.append(cep);
-			//	}
-
-			// System.out.println(jsonCep.toString());
-
-			//Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
-
-			//usuario.setCep(usuarioAuxiliar.getCep());
-			//usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
-			//usuario.setComplemento(usuarioAuxiliar.getComplemento());
-			//usuario.setBairro(usuarioAuxiliar.getBairro());
-			//usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
-			//usuario.setUf(usuarioAuxiliar.getUf());
 
 			/* Para criptografar a senha antes de salva-la no banco de dados */
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
