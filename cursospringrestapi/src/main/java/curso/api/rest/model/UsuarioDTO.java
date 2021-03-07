@@ -1,5 +1,7 @@
 package curso.api.rest.model;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import java.io.Serializable;
 
 /* Essa classe serve para restringirmos o acesso aos dados da classe principal. */

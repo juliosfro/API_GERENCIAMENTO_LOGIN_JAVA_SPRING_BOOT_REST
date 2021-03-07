@@ -1,14 +1,8 @@
 package curso.api.rest.controller;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.Gson;
 import curso.api.rest.model.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import curso.api.rest.model.Usuario;
 import curso.api.rest.repository.UsuarioRepository;
+
+import javax.validation.Valid;
+
 
 @CrossOrigin
 @RestController /* Para a classe aceitar métodos REST */
@@ -83,43 +81,47 @@ public class IndexController {
 
 	/* Método para salvar um usuario no banco de dados. */
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) throws Exception {
+	public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario usuario, BindingResult br) throws Exception {
 
-		/* Para fazer a associção do usuario com o telefone. */
-		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
-			usuario.getTelefones().get(pos).setUsuario(usuario);
+		if (br.hasErrors()) {
+			throw new IllegalArgumentException(br.getAllErrors().get(0).getDefaultMessage());
+		} else {
+			/* Para fazer a associção do usuario com o telefone. */
+			for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
+				usuario.getTelefones().get(pos).setUsuario(usuario);
+			}
+
+			/* Consumindo API publica externa ViaCep... */
+
+			//URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
+			//URLConnection connection = url.openConnection();
+			//InputStream inputStream = connection.getInputStream();
+			//BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+			//String cep = "";
+			//StringBuilder jsonCep = new StringBuilder();
+
+			//	while (( cep = bufferedReader.readLine()) != null) {
+			//		jsonCep.append(cep);
+			//	}
+
+			// System.out.println(jsonCep.toString());
+
+			//Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
+
+			//usuario.setCep(usuarioAuxiliar.getCep());
+			//usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
+			//usuario.setComplemento(usuarioAuxiliar.getComplemento());
+			//usuario.setBairro(usuarioAuxiliar.getBairro());
+			//usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
+			//usuario.setUf(usuarioAuxiliar.getUf());
+
+			/* Para criptografar a senha antes de salva-la no banco de dados */
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+			usuario.setSenha(senhaCriptografada);
+			Usuario usuarioSalvo = usuarioRepository.save(usuario);
+			return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 		}
-
-		/* Consumindo API publica externa ViaCep... */
-
-		//URL url = new URL("http://viacep.com.br/ws/"+usuario.getCep()+"/json/");
-		//URLConnection connection = url.openConnection();
-		//InputStream inputStream = connection.getInputStream();
-		//BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-		//String cep = "";
-		//StringBuilder jsonCep = new StringBuilder();
-
-	//	while (( cep = bufferedReader.readLine()) != null) {
-	//		jsonCep.append(cep);
-	//	}
-
-		// System.out.println(jsonCep.toString());
-
-		//Usuario usuarioAuxiliar = new Gson().fromJson(jsonCep.toString(), Usuario.class);
-
-		//usuario.setCep(usuarioAuxiliar.getCep());
-		//usuario.setLogradouro(usuarioAuxiliar.getLogradouro());
-		//usuario.setComplemento(usuarioAuxiliar.getComplemento());
-		//usuario.setBairro(usuarioAuxiliar.getBairro());
-		//usuario.setLocalidade(usuarioAuxiliar.getLocalidade());
-		//usuario.setUf(usuarioAuxiliar.getUf());
-
-		/* Para criptografar a senha antes de salva-la no banco de dados */
-		String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-		usuario.setSenha(senhaCriptografada);
-		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 
 	/* Método para atualizar um usuario no banco de dados. */

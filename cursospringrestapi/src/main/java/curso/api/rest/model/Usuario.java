@@ -17,7 +17,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.UniqueConstraint;
+import javax.validation.Valid;
 
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -40,6 +42,7 @@ public class Usuario implements UserDetails {
 	private String login;
 	private String senha;
 	private String nome;
+	@CPF
 	private String Cpf;
 
 	private String cep;
