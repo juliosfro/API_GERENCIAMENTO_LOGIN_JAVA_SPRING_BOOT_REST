@@ -3,6 +3,7 @@ package curso.api.rest.model;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
 
 import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
@@ -87,7 +87,7 @@ public class Usuario implements UserDetails {
 	}
 
 	public void setLogin(String login) {
-		this.login = login;
+		this.login = login.toLowerCase();
 	}
 
 	/* Se colocar @JsonIgnore aqui o login para de funcionar. */
@@ -104,7 +104,7 @@ public class Usuario implements UserDetails {
 	}
 
 	public void setNome(String nome) {
-		this.nome = nome;
+		this.nome = nome.toLowerCase();
 	}
 
 	public List<Telefone> getTelefones() {
