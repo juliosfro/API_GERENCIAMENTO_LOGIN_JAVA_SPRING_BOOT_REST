@@ -3,6 +3,8 @@ package curso.api.rest.model;
 import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /* Essa classe serve para restringirmos o acesso aos dados da classe principal. */
 public class UsuarioDTO implements Serializable {
@@ -13,6 +15,7 @@ public class UsuarioDTO implements Serializable {
     private String login;
     private String cpf;
     private String senha;
+    private List<Telefone> telefones = new ArrayList<Telefone>();
 
     public UsuarioDTO(Usuario usuario) {
         this.nome = usuario.getNome();
@@ -20,6 +23,7 @@ public class UsuarioDTO implements Serializable {
         this.cpf = usuario.getCpf();
         this.id = usuario.getId();
         this.senha = usuario.getSenha();
+        this.telefones = usuario.getTelefones();
     }
 
     public Long getId() {
@@ -37,6 +41,7 @@ public class UsuarioDTO implements Serializable {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
     public String getLogin() {
         return login;
     }
@@ -60,4 +65,13 @@ public class UsuarioDTO implements Serializable {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+    public List<Telefone> getTelefones() {
+        return telefones;
+    }
+
+    public void setTelefones(List<Telefone> telefones) {
+        this.telefones = telefones;
+    }
+
 }

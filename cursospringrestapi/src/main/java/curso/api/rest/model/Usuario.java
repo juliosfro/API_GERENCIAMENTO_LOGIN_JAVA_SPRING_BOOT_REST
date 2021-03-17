@@ -3,7 +3,6 @@ package curso.api.rest.model;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,7 +41,7 @@ public class Usuario implements UserDetails {
 	private String login;
 	private String senha;
 	private String nome;
-	@CPF
+	@CPF(message = "O número do cpf informado não é válido.")
 	private String Cpf;
 
 	private String cep;
@@ -200,7 +199,7 @@ public class Usuario implements UserDetails {
 
 	/* É a lista de acesso dos usuarios contendo os roles, exemplo ROLE_ADMIN */
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<Role> getAuthorities() {
 		// TODO Auto-generated method stub
 		return this.roles;
 	}

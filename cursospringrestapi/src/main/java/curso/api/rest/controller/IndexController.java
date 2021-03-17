@@ -1,26 +1,23 @@
 package curso.api.rest.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import curso.api.rest.model.UsuarioDTO;
+import curso.api.rest.repository.TelefoneRepository;
+import curso.api.rest.service.ImplementationUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import curso.api.rest.model.Usuario;
 import curso.api.rest.repository.UsuarioRepository;
@@ -36,6 +33,12 @@ public class IndexController {
 	/* Injeção de dependencia do nosso repositorio de usuario no controller. */
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private TelefoneRepository telefoneRepository;
+
+	@Autowired
+	private ImplementationUserDetailsService implementationUserDetailsService;
 
 	/* Método para consultar usuário e venda por id do banco de dados. */
 	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,27 +59,41 @@ public class IndexController {
 		return new ResponseEntity<UsuarioDTO>(new UsuarioDTO(usuario.get()), HttpStatus.OK);
 	}
 
-	/* Método para consultar todos os usuarios do banco de dados */
-	/* Vamos supor que o carregamento de usuarios seja um processo lento
-	*  e queremos controlar ele com cache para agilizar o processo. */
-	@GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+
+	@GetMapping(value = "/page/{pagina}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@CacheEvict(value = "cache_usuarios", allEntries = true)
 	@CachePut("cache_usuarios")
-	public ResponseEntity<List<Usuario>> readAll() throws InterruptedException {
-		List<Usuario> list = (List<Usuario>) usuarioRepository.findAll();
+	public ResponseEntity<Page<Usuario>> readUserPage(@PathVariable("pagina") int pagina) throws InterruptedException {
 
-		/* Segura o codigo por 6 segundos simulando um processo lento */
-		// Thread.sleep(6000);
-		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
+		/* Esta funcionando corretamente... */
+		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
+		Page<Usuario> lista = usuarioRepository.findAll(page);
+
+		// System.out.println("Resgitros da página: => " + page);
+
+		return new ResponseEntity<Page<Usuario>>(lista, HttpStatus.OK);
 	}
+	
+	/* END-POINT consulta de usuário por nome */
+	@GetMapping(value = "/usuarioPorNome/{nome}/page/{page}", produces = "application/json")
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>> readUserByNamePage(@PathVariable("nome") String nome, @PathVariable("page") int page) throws InterruptedException{
 
-	/* End-Point de consulta de usuario por nome */
-	@GetMapping(value = "/usuarioPorNome/{nome}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@CacheEvict(value = "cache_usuarios", allEntries = true)
-	@CachePut("cache_usuarios")
-	public ResponseEntity<List<Usuario>> readUserByName(@PathVariable("nome") String nome) throws InterruptedException {
-		List<Usuario> list = (List<Usuario>) usuarioRepository.findUserByName(nome);
-		return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
+		PageRequest pageRequest = null;
+		Page<Usuario> list = null;
+
+		if (nome == null || (nome != null && nome.trim().isEmpty())
+				|| nome.equalsIgnoreCase("undefined")) { /* Não informou nome */
+
+			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
+			list =  usuarioRepository.findAll(pageRequest);
+		}else {
+			// pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
+			//list = usuarioRepository.findUserByNamePage(nome, pageRequest);
+			//list = search(nome, 0, 0);
+		}
+
+		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
 	}
 
 	/* Método para salvar um usuario no banco de dados. */
@@ -95,6 +112,9 @@ public class IndexController {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 			usuario.setSenha(senhaCriptografada);
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+			implementationUserDetailsService.insereAcessoPadrao(usuarioSalvo.getId());
+
 			return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 		}
 	}
@@ -132,4 +152,44 @@ public class IndexController {
 		return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
 	}
 
+	@DeleteMapping(value = "/removeTelephone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> deleteTelephone(@PathVariable("id") Long id)  {
+		telefoneRepository.deleteById(id);
+		return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
+	}
+
+
+	@GetMapping("/search/nome/{nome}/pagina/{pagina}")
+	public Page<Usuario> search(
+			@PathVariable("nome") String nome,
+			@PathVariable(value = "pagina") String pagina,
+			@RequestParam(
+					value = "page",
+					required = false,
+					defaultValue = "0") int page,
+			@RequestParam(
+					value = "size",
+					required = false,
+					defaultValue = "5") int size) {
+
+		if (pagina.equals("undefined") || pagina.trim().isEmpty() || pagina == null){
+			pagina = "0";
+		}
+
+		return searchByNamePage(nome, Integer.parseInt(pagina), size);
+	}
+
+	public Page<Usuario> searchByNamePage(String searchTerm, int page, int size) {
+
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "nome");
+		return usuarioRepository.search(searchTerm.toLowerCase(), pageRequest);
+	}
+
+	public Page<Usuario> findAll2() {
+		int page = 0;
+		int size = 10;
+
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "name");
+		return new PageImpl<>(usuarioRepository.findAll(), pageRequest, size);
+	}
 }
