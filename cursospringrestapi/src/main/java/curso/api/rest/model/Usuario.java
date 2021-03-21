@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.validator.constraints.br.CPF;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,7 +41,7 @@ public class Usuario implements UserDetails {
 	private String senha;
 	private String nome;
 	@CPF(message = "O número do cpf informado não é válido.")
-	private String Cpf;
+	private String cpf;
 
 	private String cep;
 	private String bairro;
@@ -115,11 +114,11 @@ public class Usuario implements UserDetails {
 	}
 
 	public String getCpf() {
-		return Cpf;
+		return cpf;
 	}
 
 	public void setCpf(String cpf) {
-		Cpf = cpf;
+		this.cpf = cpf;
 	}
 
 

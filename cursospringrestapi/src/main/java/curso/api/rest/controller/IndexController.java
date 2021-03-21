@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -43,7 +42,7 @@ public class IndexController {
 	/* Método para consultar usuário e venda por id do banco de dados. */
 	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Usuario> relatorio(@PathVariable(value = "id") Long id,
-			@PathVariable(value = "venda") Long venda) {
+											 @PathVariable(value = "venda") Long venda) {
 
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		/* O retorno seria um relatório. */
@@ -60,41 +59,22 @@ public class IndexController {
 	}
 
 
-	@GetMapping(value = "/page/{pagina}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/page/{pagina}/sort/{sort}/criterion/{criterion}/size/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@CacheEvict(value = "cache_usuarios", allEntries = true)
 	@CachePut("cache_usuarios")
-	public ResponseEntity<Page<Usuario>> readUserPage(@PathVariable("pagina") int pagina) throws InterruptedException {
+	public ResponseEntity<Page<Usuario>> readUserPage(@PathVariable("pagina") int pagina,
+													  @PathVariable("sort") String sort,
+													  @PathVariable("criterion") String criterion,
+													  @PathVariable("size") String size) throws InterruptedException {
 
-		/* Esta funcionando corretamente... */
-		PageRequest page = PageRequest.of(pagina, 5, Sort.by("nome"));
-		Page<Usuario> lista = usuarioRepository.findAll(page);
+		size = size.equals("undefined")
+				|| size.trim().equals("")
+				|| size.equals("null") ? "5" : size ;
 
-		// System.out.println("Resgitros da página: => " + page);
-
-		return new ResponseEntity<Page<Usuario>>(lista, HttpStatus.OK);
+		PageRequest page = PageRequest.of(pagina, Integer.parseInt(size), Sort.Direction.fromString(sort.toUpperCase()), criterion);
+		return new ResponseEntity<Page<Usuario>>(usuarioRepository.findAll(page), HttpStatus.OK);
 	}
-	
-	/* END-POINT consulta de usuário por nome */
-	@GetMapping(value = "/usuarioPorNome/{nome}/page/{page}", produces = "application/json")
-	@CachePut("cacheusuarios")
-	public ResponseEntity<Page<Usuario>> readUserByNamePage(@PathVariable("nome") String nome, @PathVariable("page") int page) throws InterruptedException{
 
-		PageRequest pageRequest = null;
-		Page<Usuario> list = null;
-
-		if (nome == null || (nome != null && nome.trim().isEmpty())
-				|| nome.equalsIgnoreCase("undefined")) { /* Não informou nome */
-
-			pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
-			list =  usuarioRepository.findAll(pageRequest);
-		}else {
-			// pageRequest = PageRequest.of(page, 5, Sort.by("nome"));
-			//list = usuarioRepository.findUserByNamePage(nome, pageRequest);
-			//list = search(nome, 0, 0);
-		}
-
-		return new ResponseEntity<Page<Usuario>>(list, HttpStatus.OK);
-	}
 
 	/* Método para salvar um usuario no banco de dados. */
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -158,38 +138,35 @@ public class IndexController {
 		return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
 	}
 
-
-	@GetMapping("/search/nome/{nome}/pagina/{pagina}")
-	public Page<Usuario> search(
+	/* END-POINT consulta de usuário por nome */
+	@GetMapping(value ="/search/nome/{nome}/pagina/{pagina}/sort/{sort}/criterion/{criterion}/size/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@CachePut("cacheusuarios")
+	public ResponseEntity<Page<Usuario>> search(
 			@PathVariable("nome") String nome,
-			@PathVariable(value = "pagina") String pagina,
-			@RequestParam(
-					value = "page",
-					required = false,
-					defaultValue = "0") int page,
-			@RequestParam(
-					value = "size",
-					required = false,
-					defaultValue = "5") int size) {
+			@PathVariable("pagina") String pagina,
+			@PathVariable("sort") String sort,
+			@PathVariable("criterion") String criterion,
+			@PathVariable("size") String size) throws InterruptedException {
 
-		if (pagina.equals("undefined") || pagina.trim().isEmpty() || pagina == null){
-			pagina = "0";
-		}
+		pagina = pagina.equals("undefined")
+				|| pagina.trim().equals("")
+				|| pagina.equals("null") ? "0" : pagina;
 
-		return searchByNamePage(nome, Integer.parseInt(pagina), size);
+		size = size.equals("undefined")
+				|| size.trim().equals("")
+				|| size.equals("null") ? "5" : size ;
+
+		return	nome == null
+				|| (nome != null && nome.trim().isEmpty())
+				|| nome.equalsIgnoreCase("undefined")
+				|| nome.equalsIgnoreCase("null")
+				|| nome.trim().equals("") ? readUserPage(Integer.parseInt(pagina), sort, criterion, size) :
+				searchByNamePage(nome, Integer.parseInt(pagina), Integer.parseInt(size), sort, criterion);
 	}
 
-	public Page<Usuario> searchByNamePage(String searchTerm, int page, int size) {
-
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "nome");
-		return usuarioRepository.search(searchTerm.toLowerCase(), pageRequest);
+	public ResponseEntity<Page<Usuario>> searchByNamePage(String nome, int page, int size, String sort, String criterion) {
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sort.toUpperCase()), criterion);
+		return new ResponseEntity<Page<Usuario>> (usuarioRepository.search(nome.toLowerCase(), pageRequest), HttpStatus.OK);
 	}
 
-	public Page<Usuario> findAll2() {
-		int page = 0;
-		int size = 10;
-
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.ASC, "name");
-		return new PageImpl<>(usuarioRepository.findAll(), pageRequest, size);
-	}
 }
