@@ -12,6 +12,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EntityScan(basePackages = {
 		"curso.api.rest.model" }) /* Nossas classes de modelo para criar as tabelas no banco de dados. */
@@ -26,6 +29,7 @@ public class CursospringrestapiApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursospringrestapiApplication.class, args);
+		TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
 		// System.out.println(new BCryptPasswordEncoder().encode("123"));
 	}
 

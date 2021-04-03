@@ -1,24 +1,17 @@
 package curso.api.rest.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ConstraintMode;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,6 +42,10 @@ public class Usuario implements UserDetails {
 	private String complemento;
 	private String localidade;
 	private String uf;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME, pattern = "dd/MM/yyyy")
+	private Date dataNascimento;
 
 	/* Um usuário tem vários telefones. */
 	@OneToMany(mappedBy = "usuario", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -170,6 +167,14 @@ public class Usuario implements UserDetails {
 		this.uf = uf;
 	}
 
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
+
+	public void setDataNascimento(String dataNascimento) throws ParseException {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		this.dataNascimento = dateFormat.parse(dataNascimento);
+	}
 
 	@Override
 	public int hashCode() {
@@ -199,7 +204,6 @@ public class Usuario implements UserDetails {
 	/* É a lista de acesso dos usuarios contendo os roles, exemplo ROLE_ADMIN */
 	@Override
 	public Collection<Role> getAuthorities() {
-		// TODO Auto-generated method stub
 		return this.roles;
 	}
 

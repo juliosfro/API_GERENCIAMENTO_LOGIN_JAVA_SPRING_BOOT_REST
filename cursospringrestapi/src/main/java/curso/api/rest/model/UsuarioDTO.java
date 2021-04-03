@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /* Essa classe serve para restringirmos o acesso aos dados da classe principal. */
@@ -16,6 +17,7 @@ public class UsuarioDTO implements Serializable {
     private String cpf;
     private String senha;
     private List<Telefone> telefones = new ArrayList<Telefone>();
+    private Date dataNascimento;
 
     public UsuarioDTO(Usuario usuario) {
         this.nome = usuario.getNome();
@@ -24,6 +26,7 @@ public class UsuarioDTO implements Serializable {
         this.id = usuario.getId();
         this.senha = usuario.getSenha();
         this.telefones = usuario.getTelefones();
+        this.dataNascimento = usuario.getDataNascimento();
     }
 
     public Long getId() {
@@ -74,4 +77,11 @@ public class UsuarioDTO implements Serializable {
         this.telefones = telefones;
     }
 
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
 }

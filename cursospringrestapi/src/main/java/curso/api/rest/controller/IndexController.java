@@ -1,6 +1,10 @@
 package curso.api.rest.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import curso.api.rest.model.UsuarioDTO;
 import curso.api.rest.repository.TelefoneRepository;
@@ -91,6 +95,14 @@ public class IndexController {
 			/* Para criptografar a senha antes de salva-la no banco de dados */
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 			usuario.setSenha(senhaCriptografada);
+
+			/* Formatacao da data de nascimento para o padrao brasileiro */
+			Date currentDate = new Date (usuario.getDataNascimento().getTime());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			String date = dateFormat.format(currentDate);
+			usuario.setDataNascimento(date);
+
 			Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
 			implementationUserDetailsService.insereAcessoPadrao(usuarioSalvo.getId());
@@ -101,7 +113,7 @@ public class IndexController {
 
 	/* Método para atualizar um usuario no banco de dados. */
 	@PutMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) {
+	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) throws ParseException {
 
 		/* Para fazer a associção do usuario com o telefone. */
 		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
@@ -120,6 +132,13 @@ public class IndexController {
 			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
 			usuario.setSenha(senhaCriptografada);
 		}
+
+		/* Formatacao da data de nascimento para o padrao brasileiro */
+		Date currentDate = new Date (usuario.getDataNascimento().getTime());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		String date = dateFormat.format(currentDate);
+		usuario.setDataNascimento(date);
 
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
