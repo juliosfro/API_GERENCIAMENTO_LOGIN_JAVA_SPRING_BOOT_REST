@@ -28,7 +28,8 @@ public class WebConfigSecurity extends WebSecurityConfigurerAdapter {
 
 				/* Ativando restrição a URL. */
 				/* Abaixo esta dizendo que a parte inicial do sistema será publica. */
-				.disable().authorizeRequests().antMatchers("/").permitAll().antMatchers("/index").permitAll()
+				.disable().authorizeRequests().antMatchers("/").permitAll()
+				.antMatchers("/index", "/recuperar/**").permitAll()
 
 				/* Para aceitar requisicoes de todos os metodos do HTTP */
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

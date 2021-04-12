@@ -2,13 +2,15 @@ package curso.api.rest.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
+import curso.api.rest.model.UserChart;
+import curso.api.rest.model.UserReport;
 import curso.api.rest.model.UsuarioDTO;
 import curso.api.rest.repository.TelefoneRepository;
 import curso.api.rest.service.ImplementationUserDetailsService;
+import curso.api.rest.service.ServiceRelatorio;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import curso.api.rest.model.Usuario;
 import curso.api.rest.repository.UsuarioRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 
@@ -41,7 +45,13 @@ public class IndexController {
 	private TelefoneRepository telefoneRepository;
 
 	@Autowired
+	private ServiceRelatorio serviceRelatorio;
+
+	@Autowired
 	private ImplementationUserDetailsService implementationUserDetailsService;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	/* Método para consultar usuário e venda por id do banco de dados. */
 	@GetMapping(value = "/{id}/codigovenda/{venda}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +83,7 @@ public class IndexController {
 
 		size = size.equals("undefined")
 				|| size.trim().equals("")
-				|| size.equals("null") ? "5" : size ;
+				|| size.equals("null") ? "5" : size;
 
 		PageRequest page = PageRequest.of(pagina, Integer.parseInt(size), Sort.Direction.fromString(sort.toUpperCase()), criterion);
 		return new ResponseEntity<Page<Usuario>>(usuarioRepository.findAll(page), HttpStatus.OK);
@@ -97,7 +107,7 @@ public class IndexController {
 			usuario.setSenha(senhaCriptografada);
 
 			/* Formatacao da data de nascimento para o padrao brasileiro */
-			Date currentDate = new Date (usuario.getDataNascimento().getTime());
+			Date currentDate = new Date(usuario.getDataNascimento().getTime());
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			String date = dateFormat.format(currentDate);
@@ -134,7 +144,7 @@ public class IndexController {
 		}
 
 		/* Formatacao da data de nascimento para o padrao brasileiro */
-		Date currentDate = new Date (usuario.getDataNascimento().getTime());
+		Date currentDate = new Date(usuario.getDataNascimento().getTime());
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String date = dateFormat.format(currentDate);
@@ -152,13 +162,13 @@ public class IndexController {
 	}
 
 	@DeleteMapping(value = "/removeTelephone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> deleteTelephone(@PathVariable("id") Long id)  {
+	public ResponseEntity<String> deleteTelephone(@PathVariable("id") Long id) {
 		telefoneRepository.deleteById(id);
 		return new ResponseEntity<String>(id.toString(), HttpStatus.OK);
 	}
 
 	/* END-POINT consulta de usuário por nome */
-	@GetMapping(value ="/search/nome/{nome}/pagina/{pagina}/sort/{sort}/criterion/{criterion}/size/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/search/nome/{nome}/pagina/{pagina}/sort/{sort}/criterion/{criterion}/size/{size}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@CachePut("cacheusuarios")
 	public ResponseEntity<Page<Usuario>> search(
 			@PathVariable("nome") String nome,
@@ -173,9 +183,9 @@ public class IndexController {
 
 		size = size.equals("undefined")
 				|| size.trim().equals("")
-				|| size.equals("null") ? "5" : size ;
+				|| size.equals("null") ? "5" : size;
 
-		return	nome == null
+		return nome == null
 				|| (nome != null && nome.trim().isEmpty())
 				|| nome.equalsIgnoreCase("undefined")
 				|| nome.equalsIgnoreCase("null")
@@ -185,7 +195,53 @@ public class IndexController {
 
 	public ResponseEntity<Page<Usuario>> searchByNamePage(String nome, int page, int size, String sort, String criterion) {
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sort.toUpperCase()), criterion);
-		return new ResponseEntity<Page<Usuario>> (usuarioRepository.search(nome.toLowerCase(), pageRequest), HttpStatus.OK);
+		return new ResponseEntity<Page<Usuario>>(usuarioRepository.search(nome.toLowerCase(), pageRequest), HttpStatus.OK);
 	}
 
+	@GetMapping(value = "/relatorio", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> downloadRelatorio(HttpServletRequest httpServletRequest) throws Exception {
+
+		byte[] pdf = serviceRelatorio.gerarRelatorio("relatorio-usuario",
+				httpServletRequest.getServletContext());
+
+		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		return new ResponseEntity<String>(base64Pdf, HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/relatorio/", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> downloadRelatorioParam(HttpServletRequest httpServletRequest, @RequestBody UserReport userReport) throws Exception {
+
+		SimpleDateFormat dateFormatParam = new SimpleDateFormat("yyyy-MM-dd");
+		String dataInicio = dateFormatParam.format(dateFormatParam.parse(userReport.getDataInicio()));
+		String dataFim = dateFormatParam.format(dateFormatParam.parse(userReport.getDataFim()));
+
+		//System.out.println(dataInicio);
+		//System.out.println(dataFim);
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("DATA_INICIO", dataInicio);
+		params.put("DATA_FIM", dataFim);
+
+		byte[] pdf = serviceRelatorio.gerarRelatorioParam("relatorio-usuario-param", params,
+				httpServletRequest.getServletContext());
+
+		String base64Pdf = "data:application/pdf;base64," + Base64.encodeBase64String(pdf);
+		return new ResponseEntity<String>(base64Pdf, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/grafico", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserChart> graficoSalario() {
+
+		UserChart userChart = new UserChart();
+		String consultaSql = "select array_agg(nome) from usuario where salario > 0 and nome <> '' union all select cast(array_agg(salario) as character varying[]) from usuario where salario > 0 and nome <> ''";
+		List<String> resultado = jdbcTemplate.queryForList(consultaSql, String.class);
+
+		if (!resultado.isEmpty()) {
+			String nomes = resultado.get(0).replaceAll("\\{", "").replaceAll("\\}", "");
+			String salarios = resultado.get(1).replaceAll("\\{", "").replaceAll("\\}", "");
+			userChart.setNome(nomes);
+			userChart.setSalario(salarios);
+		}
+		return new ResponseEntity<UserChart>(userChart, HttpStatus.OK);
+	}
 }

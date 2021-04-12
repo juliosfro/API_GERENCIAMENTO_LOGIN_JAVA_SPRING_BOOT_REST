@@ -36,6 +36,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	@Query(nativeQuery = true, value = "update usuario set token =?1 where login = ?2")
 	void upDateTokenUser(String token, String login);
 
+	@Transactional
+	@Modifying
+	@Query(value = "update usuario set senha = ?1 where id = ?2", nativeQuery = true)
+	void updatePassword(String newPassword, Long codUser);
 
 	default Page<Usuario> findUserByNamePage(String nome, PageRequest pageRequest) {
 

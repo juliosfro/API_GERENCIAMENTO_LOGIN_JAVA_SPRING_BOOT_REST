@@ -3,6 +3,7 @@ package curso.api.rest.model;
 import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,8 @@ public class UsuarioDTO implements Serializable {
     private String senha;
     private List<Telefone> telefones = new ArrayList<Telefone>();
     private Date dataNascimento;
+    private Profissao profissao;
+    private BigDecimal salario;
 
     public UsuarioDTO(Usuario usuario) {
         this.nome = usuario.getNome();
@@ -27,6 +30,8 @@ public class UsuarioDTO implements Serializable {
         this.senha = usuario.getSenha();
         this.telefones = usuario.getTelefones();
         this.dataNascimento = usuario.getDataNascimento();
+        this.profissao = usuario.getProfissao();
+        this.salario = usuario.getSalario();
     }
 
     public Long getId() {
@@ -84,4 +89,21 @@ public class UsuarioDTO implements Serializable {
     public void setDataNascimento(Date dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
+
+    public Profissao getProfissao() {
+        return profissao;
+    }
+
+    public void setProfissao(Profissao profissao) {
+        this.profissao = profissao;
+    }
+
+    public void setSalario(BigDecimal salario) {
+        this.salario = salario;
+    }
+
+    public BigDecimal getSalario() {
+        return salario;
+    }
+
 }

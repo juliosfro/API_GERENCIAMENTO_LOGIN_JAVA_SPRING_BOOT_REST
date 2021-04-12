@@ -44,5 +44,7 @@ public class CursospringrestapiApplication implements WebMvcConfigurer {
 		/* Podemos restringir quais tipos de requisicoes que podem ser enviadas */
 		/* É possivel restringir por origem, ou seja, quem esta requisitando. */
 		registry.addMapping("/usuario/**").allowedMethods("*").allowedOrigins("*");
+		registry.addMapping("/profissao/**").allowedMethods("*").allowedOrigins("*");
+		registry.addMapping("/recuperar/**").allowedMethods("**").allowedOrigins("**");
 	}
 }
