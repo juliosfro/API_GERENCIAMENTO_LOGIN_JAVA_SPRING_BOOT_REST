@@ -11,7 +11,7 @@ import java.util.Properties;
 public class ServiceEnviaEmail {
 
     private String emailUserName = "j.neto@edu.unipar.br";
-    private String emailSenha = "123652";
+    private String emailSenha = "e3e3e3ef";
 
     public void enviarEmail(String assunto, String emailDestino, String mensagem) throws Exception {
 
