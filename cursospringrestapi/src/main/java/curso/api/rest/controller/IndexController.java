@@ -123,35 +123,40 @@ public class IndexController {
 
 	/* Método para atualizar um usuario no banco de dados. */
 	@PutMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) throws ParseException {
+	public ResponseEntity<Usuario> update(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) throws Exception {
 
-		/* Para fazer a associção do usuario com o telefone. */
-		for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
-			usuario.getTelefones().get(pos).setUsuario(usuario);
+		if (bindingResult.hasErrors()) {
+			throw new IllegalArgumentException(bindingResult.getAllErrors().get(0).getDefaultMessage());
+		} else {
+			/* Para fazer a associção do usuario com o telefone. */
+			for (int pos = 0; pos < usuario.getTelefones().size(); pos++) {
+				usuario.getTelefones().get(pos).setUsuario(usuario);
+			}
+
+			/*
+			 * Verificar se a senha já existe no banco de dados, se existe não criptografar,
+			 * se não existe significa que é uma nova senha então criptografa.
+			 */
+
+			Usuario usuarioTemp = usuarioRepository.findById(usuario.getId()).get();
+
+			/* Se as senhas forem diferentes então criptografa e atualiza. */
+			if (!usuarioTemp.getSenha().equals(usuario.getSenha())) {
+				String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
+				usuario.setSenha(senhaCriptografada);
+			}
+
+			/* Formatacao da data de nascimento para o padrao brasileiro */
+			Date currentDate = new Date(usuario.getDataNascimento().getTime());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			String date = dateFormat.format(currentDate);
+			usuario.setDataNascimento(date);
+
+			Usuario usuarioSalvo = usuarioRepository.save(usuario);
+			return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 		}
 
-		/*
-		 * Verificar se a senha já existe no banco de dados, se existe não criptografar,
-		 * se não existe significa que é uma nova senha então criptografa.
-		 */
-
-		Usuario usuarioTemp = usuarioRepository.findById(usuario.getId()).get();
-
-		/* Se as senhas forem diferentes então criptografa e atualiza. */
-		if (!usuarioTemp.getSenha().equals(usuario.getSenha())) {
-			String senhaCriptografada = new BCryptPasswordEncoder().encode(usuario.getSenha());
-			usuario.setSenha(senhaCriptografada);
-		}
-
-		/* Formatacao da data de nascimento para o padrao brasileiro */
-		Date currentDate = new Date(usuario.getDataNascimento().getTime());
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String date = dateFormat.format(currentDate);
-		usuario.setDataNascimento(date);
-
-		Usuario usuarioSalvo = usuarioRepository.save(usuario);
-		return new ResponseEntity<Usuario>(usuarioSalvo, HttpStatus.OK);
 	}
 
 	/* Método para deletar um usuário por id do banco de dados. */

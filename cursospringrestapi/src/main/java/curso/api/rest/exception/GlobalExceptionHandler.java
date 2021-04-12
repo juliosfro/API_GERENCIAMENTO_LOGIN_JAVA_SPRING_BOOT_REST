@@ -40,6 +40,11 @@ public class GlobalExceptionHandler {
             errorDetails = new ErrorDetails(new Date(), message, request.getDescription(false), HttpStatus.BAD_REQUEST.toString());
             return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
         }
+        else if (exception instanceof Exception) {
+            message = exception.getMessage();
+            errorDetails = new ErrorDetails(new Date(), message, request.getDescription(false), HttpStatus.BAD_REQUEST.toString());
+            return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        }
         else {
             errorDetails = new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false), HttpStatus.INTERNAL_SERVER_ERROR.toString());
             return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
