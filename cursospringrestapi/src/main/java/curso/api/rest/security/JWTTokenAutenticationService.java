@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jayway.jsonpath.internal.function.text.Concatenate;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class JWTTokenAutenticationService {
 
 	/* Vamos declarar algumas constantes que serão importantes */
 	/* O tempo de expiração é em milisegundos, nesse caso serão 2 dias */
-	private static final Long EXPIRATION_TIME = 172800000l;
+	private static final Long EXPIRATION_TIME = 172800000l ;
 
 	/*
 	 * Uma senha única para compor a autenticação, poderia ser uma assinatura de
@@ -101,7 +102,7 @@ public class JWTTokenAutenticationService {
 			} /* Fim da condicao token */
 		} catch (ExpiredJwtException e){
 			try {
-				response.getOutputStream().println("TOKEN Expirado, faça login ou informe novo TOKEN");
+				response.getOutputStream().println("Token expirado, faca login ou informe um novo token.");
 			} catch (IOException ioException) {
 
 			}

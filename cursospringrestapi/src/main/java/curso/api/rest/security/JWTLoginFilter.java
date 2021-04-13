@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
+			Authentication authResult) throws IOException, ExpiredJwtException {
 
 		new JWTTokenAutenticationService().addAuthentication(response, authResult.getName());
 	}
